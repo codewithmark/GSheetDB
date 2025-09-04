@@ -455,25 +455,25 @@ const enrichedData = db.join(ordersDB, {
 
 **Syntax:**
 ```sql
-db.raw('SELECT columns WHERE conditions ORDER BY field LIMIT count', [params])
+db.sql('SELECT columns WHERE conditions ORDER BY field LIMIT count', [params])
 ```
 
 **Examples:**
 ```javascript
 // Select all columns
-const allUsers = db.raw('SELECT *');
+const allUsers = db.sql('SELECT *');
 
 // Select specific columns
-const contacts = db.raw('SELECT name, email');
+const contacts = db.sql('SELECT name, email');
 
 // With parameters
-const activeUsers = db.raw(
+const activeUsers = db.sql(
   'SELECT name, email WHERE status = ?',
   ['active']
 );
 
 // With multiple conditions
-const results = db.raw(`
+const results = db.sql(`
   SELECT name, email, age 
   WHERE age >= ? AND city = ?
 `, [21, 'New York']);
@@ -484,14 +484,14 @@ const results = db.raw(`
 **Examples:**
 ```javascript
 // Order by single field
-const newest = db.raw(`
+const newest = db.sql(`
   SELECT * 
   ORDER BY created_at DESC 
   LIMIT 10
 `);
 
 // Complex query with filtering, ordering, and limiting
-const topSales = db.raw(`
+const topSales = db.sql(`
   SELECT name, total_sales, region
   WHERE region = ? AND total_sales > ?
   ORDER BY total_sales DESC 
@@ -504,7 +504,7 @@ const topSales = db.raw(`
 **Examples:**
 ```javascript
 // String literals and expressions
-const report = db.raw(`
+const report = db.sql(`
   SELECT 
     name,
     salary,
@@ -514,7 +514,7 @@ const report = db.raw(`
 `, ['Engineering']);
 
 // Column aliasing
-const summary = db.raw(`
+const summary = db.sql(`
   SELECT 
     name as full_name,
     email as contact_email,
@@ -529,19 +529,19 @@ const summary = db.raw(`
 
 **Syntax:**
 ```sql
-db.raw('INSERT', [dataArray])
-db.raw('INSERT', [objectOrArrayOfObjects])
+db.sql('INSERT', [dataArray])
+db.sql('INSERT', [objectOrArrayOfObjects])
 ```
 
 **Examples:**
 ```javascript
 // Insert single record
-const result = db.raw('INSERT', [
+const result = db.sql('INSERT', [
   { name: 'John Doe', email: 'john@example.com', status: 'active' }
 ]);
 
 // Insert multiple records
-const result = db.raw('INSERT', [
+const result = db.sql('INSERT', [
   [
     { name: 'Alice', email: 'alice@example.com', status: 'active' },
     { name: 'Bob', email: 'bob@example.com', status: 'pending' }
@@ -549,7 +549,7 @@ const result = db.raw('INSERT', [
 ]);
 
 // Complex example with multiple records
-const result = db.raw('INSERT', [
+const result = db.sql('INSERT', [
   [
     { 
       row_id: 103, 
@@ -573,7 +573,7 @@ const result = db.raw('INSERT', [
 ]);
 
 // Insert with mixed data types
-const result = db.raw('INSERT', [
+const result = db.sql('INSERT', [
   [
     { id: 1, name: 'Product A', price: 29.99, active: true, created_at: new Date() },
     { id: 2, name: 'Product B', price: 45.50, active: false, created_at: new Date() }
@@ -590,31 +590,31 @@ console.log(result);
 
 **Syntax:**
 ```sql
-db.raw('UPDATE SET field=value WHERE conditions', [params])
+db.sql('UPDATE SET field=value WHERE conditions', [params])
 ```
 
 **Examples:**
 ```javascript
 // Simple update
-const result = db.raw(`
+const result = db.sql(`
   UPDATE SET status = 'inactive' 
   WHERE last_login < '2024-01-01'
 `);
 
 // Update with parameters
-const result = db.raw(`
+const result = db.sql(`
   UPDATE SET price = ?, category = ?
   WHERE id = ?
 `, [29.99, 'Electronics', 123]);
 
 // Multiple field update
-const result = db.raw(`
+const result = db.sql(`
   UPDATE SET salary = 75000, position = 'Senior Developer', updated_at = NULL
   WHERE department = 'Engineering' AND experience >= 5
 `);
 
 // Conditional update with complex WHERE
-const result = db.raw(`
+const result = db.sql(`
   UPDATE SET status = 'shipped', shipped_date = '2024-03-15'
   WHERE status = 'processing' AND order_date >= '2024-03-01'
 `);
@@ -626,23 +626,23 @@ const result = db.raw(`
 
 **Syntax:**
 ```sql
-db.raw('DELETE WHERE conditions', [params])
+db.sql('DELETE WHERE conditions', [params])
 ```
 
 **Examples:**
 ```javascript
 // Simple delete
-const result = db.raw(`
+const result = db.sql(`
   DELETE WHERE status = 'deleted'
 `);
 
 // Delete with parameters
-const result = db.raw(`
+const result = db.sql(`
   DELETE WHERE created_at < ? AND level = ?
 `, ['2024-01-01', 'debug']);
 
 // Complex delete conditions
-const result = db.raw(`
+const result = db.sql(`
   DELETE WHERE expires_at < '2024-03-15' AND user_id != 1
 `);
 ```
@@ -654,21 +654,21 @@ const result = db.raw(`
 **Examples:**
 ```javascript
 // Multiple conditions
-const results = db.raw(`
+const results = db.sql(`
   SELECT * WHERE total > 100 
     AND status = 'completed' 
     AND order_date >= '2024-01-01'
 `);
 
 // Comparison operators
-const products = db.raw(`
+const products = db.sql(`
   SELECT name, price WHERE price >= 50 
     AND price <= 200 
     AND category != 'discontinued'
 `);
 
 // NULL checks
-const incomplete = db.raw(`
+const incomplete = db.sql(`
   SELECT * WHERE phone = NULL AND email != NULL
 `);
 ```
@@ -678,17 +678,17 @@ const incomplete = db.raw(`
 **Examples:**
 ```javascript
 // Single parameter
-const userOrders = db.raw(`
+const userOrders = db.sql(`
   SELECT * WHERE user_id = ? AND status = ?
 `, [123, 'active']);
 
 // Multiple parameters with different types
-const filtered = db.raw(`
+const filtered = db.sql(`
   SELECT name, age, salary WHERE age >= ? AND department = ? AND salary > ?
 `, [25, 'Engineering', 60000]);
 
 // Array parameter for IN clause
-const categories = db.raw(`
+const categories = db.sql(`
   SELECT * WHERE category = ?
 `, [['Electronics', 'Software', 'Hardware']]);
 ```
@@ -807,7 +807,7 @@ const ordersDB = new GSheetDB()
 
 | Method | Description | Returns |
 |--------|-------------|---------|
-| `raw(sql, params)` | Execute SQL-like query | Array/Object |
+| `sql(sql, params)` | Execute SQL-like query | Array/Object |
 
 ## Error Handling
 
