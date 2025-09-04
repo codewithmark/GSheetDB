@@ -455,27 +455,26 @@ const enrichedData = db.join(ordersDB, {
 
 **Syntax:**
 ```sql
-db.raw('SELECT columns FROM table WHERE conditions ORDER BY field LIMIT count', [params])
+db.raw('SELECT columns WHERE conditions ORDER BY field LIMIT count', [params])
 ```
 
 **Examples:**
 ```javascript
 // Select all columns
-const allUsers = db.raw('SELECT * FROM users');
+const allUsers = db.raw('SELECT *');
 
 // Select specific columns
-const contacts = db.raw('SELECT name, email FROM users');
+const contacts = db.raw('SELECT name, email');
 
 // With parameters
 const activeUsers = db.raw(
-  'SELECT name, email FROM users WHERE status = ?',
+  'SELECT name, email WHERE status = ?',
   ['active']
 );
 
 // With multiple conditions
 const results = db.raw(`
   SELECT name, email, age 
-  FROM users 
   WHERE age >= ? AND city = ?
 `, [21, 'New York']);
 ```
@@ -486,7 +485,7 @@ const results = db.raw(`
 ```javascript
 // Order by single field
 const newest = db.raw(`
-  SELECT * FROM users 
+  SELECT * 
   ORDER BY created_at DESC 
   LIMIT 10
 `);
@@ -494,7 +493,6 @@ const newest = db.raw(`
 // Complex query with filtering, ordering, and limiting
 const topSales = db.raw(`
   SELECT name, total_sales, region
-  FROM salespeople 
   WHERE region = ? AND total_sales > ?
   ORDER BY total_sales DESC 
   LIMIT 5
@@ -512,7 +510,6 @@ const report = db.raw(`
     salary,
     'Employee' as type,
     salary * 12 as annual_salary
-  FROM employees 
   WHERE department = ?
 `, ['Engineering']);
 
@@ -522,7 +519,6 @@ const summary = db.raw(`
     name as full_name,
     email as contact_email,
     status as account_status
-  FROM users 
   WHERE status != 'deleted'
 `);
 ```
@@ -533,21 +529,21 @@ const summary = db.raw(`
 
 **Syntax:**
 ```sql
-db.raw('INSERT INTO table VALUES (values)', [dataObject])
-db.raw('INSERT INTO table (columns) VALUES (values)')
+db.raw('INSERT VALUES (values)', [dataObject])
+db.raw('INSERT (columns) VALUES (values)')
 ```
 
 **Examples:**
 ```javascript
 // Insert with object parameter
 const result = db.raw(
-  'INSERT INTO users VALUES (?)',
+  'INSERT VALUES (?)',
   [{name: 'John Doe', email: 'john@example.com', status: 'active'}]
 );
 
 // Insert multiple records
 const result = db.raw(
-  'INSERT INTO users VALUES (?)',
+  'INSERT VALUES (?)',
   [
     {name: 'Alice', email: 'alice@example.com'},
     {name: 'Bob', email: 'bob@example.com'}
@@ -556,13 +552,13 @@ const result = db.raw(
 
 // SQL-style INSERT with VALUES
 const result = db.raw(`
-  INSERT INTO users (name, email, status) 
+  INSERT (name, email, status) 
   VALUES ('Charlie Brown', 'charlie@example.com', 'active')
 `);
 
 // Multiple rows with SQL syntax
 const result = db.raw(`
-  INSERT INTO products (name, price, category) 
+  INSERT (name, price, category) 
   VALUES 
     ('Laptop', 999.99, 'Electronics'),
     ('Mouse', 29.99, 'Electronics'),
@@ -576,36 +572,32 @@ const result = db.raw(`
 
 **Syntax:**
 ```sql
-db.raw('UPDATE table SET field=value WHERE conditions', [params])
+db.raw('UPDATE SET field=value WHERE conditions', [params])
 ```
 
 **Examples:**
 ```javascript
 // Simple update
 const result = db.raw(`
-  UPDATE users 
-  SET status = 'inactive' 
+  UPDATE SET status = 'inactive' 
   WHERE last_login < '2024-01-01'
 `);
 
 // Update with parameters
 const result = db.raw(`
-  UPDATE products 
-  SET price = ?, category = ?
+  UPDATE SET price = ?, category = ?
   WHERE id = ?
 `, [29.99, 'Electronics', 123]);
 
 // Multiple field update
 const result = db.raw(`
-  UPDATE employees 
-  SET salary = 75000, position = 'Senior Developer', updated_at = NULL
+  UPDATE SET salary = 75000, position = 'Senior Developer', updated_at = NULL
   WHERE department = 'Engineering' AND experience >= 5
 `);
 
 // Conditional update with complex WHERE
 const result = db.raw(`
-  UPDATE orders 
-  SET status = 'shipped', shipped_date = '2024-03-15'
+  UPDATE SET status = 'shipped', shipped_date = '2024-03-15'
   WHERE status = 'processing' AND order_date >= '2024-03-01'
 `);
 ```
@@ -616,27 +608,24 @@ const result = db.raw(`
 
 **Syntax:**
 ```sql
-db.raw('DELETE FROM table WHERE conditions', [params])
+db.raw('DELETE WHERE conditions', [params])
 ```
 
 **Examples:**
 ```javascript
 // Simple delete
 const result = db.raw(`
-  DELETE FROM users 
-  WHERE status = 'deleted'
+  DELETE WHERE status = 'deleted'
 `);
 
 // Delete with parameters
 const result = db.raw(`
-  DELETE FROM logs 
-  WHERE created_at < ? AND level = ?
+  DELETE WHERE created_at < ? AND level = ?
 `, ['2024-01-01', 'debug']);
 
 // Complex delete conditions
 const result = db.raw(`
-  DELETE FROM sessions 
-  WHERE expires_at < '2024-03-15' AND user_id != 1
+  DELETE WHERE expires_at < '2024-03-15' AND user_id != 1
 `);
 ```
 
@@ -648,24 +637,21 @@ const result = db.raw(`
 ```javascript
 // Multiple conditions
 const results = db.raw(`
-  SELECT * FROM orders 
-  WHERE total > 100 
+  SELECT * WHERE total > 100 
     AND status = 'completed' 
     AND order_date >= '2024-01-01'
 `);
 
 // Comparison operators
 const products = db.raw(`
-  SELECT name, price FROM products 
-  WHERE price >= 50 
+  SELECT name, price WHERE price >= 50 
     AND price <= 200 
     AND category != 'discontinued'
 `);
 
 // NULL checks
 const incomplete = db.raw(`
-  SELECT * FROM profiles 
-  WHERE phone = NULL AND email != NULL
+  SELECT * WHERE phone = NULL AND email != NULL
 `);
 ```
 
@@ -675,20 +661,17 @@ const incomplete = db.raw(`
 ```javascript
 // Single parameter
 const userOrders = db.raw(`
-  SELECT * FROM orders 
-  WHERE user_id = ? AND status = ?
+  SELECT * WHERE user_id = ? AND status = ?
 `, [123, 'active']);
 
 // Multiple parameters with different types
 const filtered = db.raw(`
-  SELECT name, age, salary FROM employees 
-  WHERE age >= ? AND department = ? AND salary > ?
+  SELECT name, age, salary WHERE age >= ? AND department = ? AND salary > ?
 `, [25, 'Engineering', 60000]);
 
 // Array parameter for IN clause
 const categories = db.raw(`
-  SELECT * FROM products 
-  WHERE category = ?
+  SELECT * WHERE category = ?
 `, [['Electronics', 'Software', 'Hardware']]);
 ```
 
