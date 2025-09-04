@@ -230,12 +230,12 @@ class GSheetDB {
   }
 
   /**
-   * Execute a SQL-like raw query
+   * Execute a SQL-like query
    * @param {string} sqlString - SQL-like query string
    * @param {Array} params - Parameters to substitute for ? placeholders
    * @returns {Array|GSheetDBQuery|Object} Query results or operation result
    */
-  raw(sqlString, params = []) {
+  sql(sqlString, params = []) {
     this._ensureLoaded();
     
     try {
@@ -256,7 +256,7 @@ class GSheetDB {
       
       throw new Error(`Unsupported SQL operation: ${parsed.operation}`);
     } catch (error) {
-      console.error('Error in raw():', error);
+      console.error('Error in sql():', error);
       console.error('SQL:', sqlString);
       console.error('Params:', params);
       throw error;
