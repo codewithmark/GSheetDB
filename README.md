@@ -529,41 +529,59 @@ const summary = db.raw(`
 
 **Syntax:**
 ```sql
-db.raw('INSERT VALUES (values)', [dataObject])
-db.raw('INSERT (columns) VALUES (values)')
+db.raw('INSERT', [dataArray])
+db.raw('INSERT', [objectOrArrayOfObjects])
 ```
 
 **Examples:**
 ```javascript
-// Insert with object parameter
-const result = db.raw(
-  'INSERT VALUES (?)',
-  [{name: 'John Doe', email: 'john@example.com', status: 'active'}]
-);
+// Insert single record
+const result = db.raw('INSERT', [
+  { name: 'John Doe', email: 'john@example.com', status: 'active' }
+]);
 
 // Insert multiple records
-const result = db.raw(
-  'INSERT VALUES (?)',
+const result = db.raw('INSERT', [
   [
-    {name: 'Alice', email: 'alice@example.com'},
-    {name: 'Bob', email: 'bob@example.com'}
+    { name: 'Alice', email: 'alice@example.com', status: 'active' },
+    { name: 'Bob', email: 'bob@example.com', status: 'pending' }
   ]
-);
+]);
 
-// SQL-style INSERT with VALUES
-const result = db.raw(`
-  INSERT (name, email, status) 
-  VALUES ('Charlie Brown', 'charlie@example.com', 'active')
-`);
+// Complex example with multiple records
+const result = db.raw('INSERT', [
+  [
+    { 
+      row_id: 103, 
+      rec_id: "00", 
+      first_name: 'Mark1', 
+      last_name: 'paid1', 
+      email: "mark1@example.com", 
+      gender: "M", 
+      ip_address: "192.168.1.101" 
+    },
+    { 
+      row_id: 104, 
+      rec_id: "00", 
+      first_name: 'Mark2', 
+      last_name: 'paid2', 
+      email: "mark2@example.com", 
+      gender: "M", 
+      ip_address: "192.168.1.102" 
+    }
+  ]
+]);
 
-// Multiple rows with SQL syntax
-const result = db.raw(`
-  INSERT (name, price, category) 
-  VALUES 
-    ('Laptop', 999.99, 'Electronics'),
-    ('Mouse', 29.99, 'Electronics'),
-    ('Desk', 299.99, 'Furniture')
-`);
+// Insert with mixed data types
+const result = db.raw('INSERT', [
+  [
+    { id: 1, name: 'Product A', price: 29.99, active: true, created_at: new Date() },
+    { id: 2, name: 'Product B', price: 45.50, active: false, created_at: new Date() }
+  ]
+]);
+
+console.log(result);
+// Returns: {inserted: 2, total: 150}
 ```
 
 ### UPDATE Statements
